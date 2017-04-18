@@ -448,6 +448,6 @@ class PepperCli(object):
             for exit_code, ret in self.poll_for_returns(api, load):
                 yield exit_code, json.dumps(ret, sort_keys=True, indent=4)
         else:
-            ret = api.low(load)
+            ret = api.low(load).get('return', [{}])[0]
             exit_code = 0
             yield exit_code, json.dumps(ret, sort_keys=True, indent=4)
