@@ -101,8 +101,8 @@ class PepperCli(object):
             Specifying this argument will cause positional arguments to be
             ignored.'''))
 
-        # optgroup.add_option('--out', '--output', dest='output',
-        #        help="Specify the output format for the command output")
+        optgroup.add_option('--out', '--output', dest='output',
+               help="Specify the output format for the command output")
 
         # optgroup.add_option('--return', default='', metavar='RETURNER',
         #    help="Redirect the output from a command to a persistent data store")

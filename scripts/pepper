@@ -6,6 +6,7 @@ from __future__ import print_function
 
 import sys
 import logging
+import json
 
 from pepper.cli import PepperCli
 from pepper import PepperException
@@ -16,6 +17,17 @@ except ImportError: # Python < 2.7
     class NullHandler(logging.Handler):
         def emit(self, record): pass
 
+try:
+    import salt.output
+    import salt.config
+    __opts__ = salt.config.minion_config('/etc/salt/minion')
+    __opts__['color']=True
+    __opts__['state_output_diff'] = True
+    __opts__['state_verbose'] = False
+    SALTLOADED=True
+except ImportError:
+    SALTLOADED=False
+
 logging.basicConfig(format='%(levelname)s %(asctime)s %(module)s: %(message)s')
 logger = logging.getLogger('pepper')
 logger.addHandler(NullHandler())
@@ -24,7 +36,14 @@ if __name__ == '__main__':
     try:
         cli = PepperCli()
         for exit_code, result in cli.run():
-            print(result)
+            out = cli.options.__dict__.get('output')
+            if SALTLOADED and out is not None:
+                try:
+                    salt.output.display_output(json.loads(result), out, opts=__opts__)
+                except:
+                    print(result)
+            else:
+                print(result)
             if exit_code is not None:
                 raise SystemExit(exit_code)
     except PepperException as exc:
